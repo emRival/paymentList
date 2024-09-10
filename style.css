@@ -1,0 +1,101 @@
+body {
+  font-family: "Josefin Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #6dd5fa, #2980b9);
+  overflow: hidden;
+  position: relative;
+  min-height: 100vh;
+  min-width: 100vw;
+}
+
+.box {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  max-width: 450px;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #2980b9;
+}
+
+.payment p {
+  margin: 10px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.copy {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  position: relative;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.copy:hover {
+  background-color: #1a5276;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+a {
+  text-decoration: none;
+}
+
+.payment img {
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.qris-button {
+  background-color: #1abc9c;
+  margin-top: 20px;
+}
+
+.qris-button:hover {
+  background-color: #16a085;
+}
+
+.icon {
+  font-size: 50px;
+  color: #2980b9;
+  margin-bottom: 15px;
+}
+
+/* Falling money animation */
+.money {
+  position: absolute;
+  top: -100px;
+  font-size: 40px;
+  color: #27ae60;
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+  }
+}

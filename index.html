@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"
+      name="viewport"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Link Payment</title>
+    <link rel="shortcut icon" type="image/x-icon" href="img/a.png" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,700"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  </head>
+
+  <body>
+    <!-- Falling money container -->
+    <div id="falling-money-container"></div>
+
+    <div class="box">
+      <div class="title">Payment List</div>
+      <div class="payment">
+        <div class="icon">
+          <i class="fas fa-money-bill-wave"></i>
+        </div>
+        <p><b>ShopeePay/Dana</b> (Muhammad Rival)</p>
+        <p id="p1"><b>08998419000</b></p>
+        <button class="copy" onclick="copyToClipboard('#p1')">COPY</button>
+
+        <p><b>BSI</b> (Muhammad Rival)</p>
+        <p id="p2"><b>7185946988</b></p>
+        <button class="copy" onclick="copyToClipboard('#p2')">COPY</button>
+
+        <br />
+
+        <p><b>Jago Syariah</b> (Muhammad Rival)</p>
+        <p id="p3"><b>508144752658</b></p>
+        <button class="copy" onclick="copyToClipboard('#p3')">COPY</button>
+
+        <br />
+
+        <p><b>QRIS</b> (Rival Dev)</p>
+        <a
+          target="_blank"
+          href="https://i.ibb.co/FbZPD4s/PHOTO-2024-03-27-08-35-44.jpg"
+        >
+          <button class="copy qris-button">SCAN QRIS</button>
+        </a>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
