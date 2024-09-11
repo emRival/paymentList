@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function loadData(token) {
     showLoader();
-    fetch(`http://tes.idnbogor.com/?token=${encodeURIComponent(token)}`, {
+    fetch(`https://tes.idnbogor.com/?token=${encodeURIComponent(token)}`, {
       method: "GET",
     })
       .then((response) => {
