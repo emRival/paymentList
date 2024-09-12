@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function loadData(token) {
     showLoader();
-    fetch(`https://tes.idnbogor.com/?token=${encodeURIComponent(token)}`, {
+    fetch(`https://8th-cgen.com/?token=${encodeURIComponent(token)}`, {
       method: "GET",
     })
       .then((response) => {
@@ -76,7 +76,9 @@ document.addEventListener("DOMContentLoaded", function () {
           pdfName = data.history[0].name || "data-hutang";
           let html = `
           <div class="greeting">👋 Halo, ${data.history[0].name || "N/A"}</div>
-          <div class="total-hutang">Total Hutang Anda: ${data.total_debt || "N/A"}</div>
+          <div class="total-hutang">Total Hutang Anda: ${
+            data.total_debt || "N/A"
+          }</div>
           <table id="hutangTable">
             <thead>
               <tr>
@@ -95,10 +97,14 @@ document.addEventListener("DOMContentLoaded", function () {
             html += `
             <tr>
               <td data-label="No">${item.index || "N/A"}</td>
-              <td data-label="Tanggal Transaksi">${item.transactionDate || "N/A"}</td>
+              <td data-label="Tanggal Transaksi">${
+                item.transactionDate || "N/A"
+              }</td>
               <td data-label="Hutang Awal">${item.initialDebt || "N/A"}</td>
               <td data-label="Pembayaran">${item.payment || "N/A"}</td>
-              <td data-label="Hutang Tambahan">${item.additionalDebt || "N/A"}</td>
+              <td data-label="Hutang Tambahan">${
+                item.additionalDebt || "N/A"
+              }</td>
               <td data-label="Sisa Hutang">${item.remainingDebt || "N/A"}</td>
             </tr>
           `;
@@ -119,8 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => {
         console.error("Error fetching data:", error);
         hideLoader();
-        dataDisplay.innerHTML =
-          "<p>Gagal memuat data, silakan coba lagi.</p>";
+        dataDisplay.innerHTML = "<p>Gagal memuat data, silakan coba lagi.</p>";
       });
   }
 
