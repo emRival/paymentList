@@ -33,6 +33,7 @@ body {
   width: relative; /* Set width to 550px */
   text-align: center;
   position: relative;
+  margin: 20px;
   z-index: 10;
   overflow: auto; /* Ensure box can scroll if content overflows */
 }
