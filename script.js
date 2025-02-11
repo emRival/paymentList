@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function loadData(token) {
     showLoader();
-    fetch(`https://8th-cgen.com/?token=${encodeURIComponent(token)}`, {
+    fetch(`https://simple-express-server-ten.vercel.app/api/token=${encodeURIComponent(token)}`, {
       method: "GET",
     })
       .then((response) => {
