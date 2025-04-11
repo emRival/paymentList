@@ -136,13 +136,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  downloadPDFButton.addEventListener("click", function () {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.text("Data Hutang", 14, 16);
+downloadPDFButton.addEventListener("click", function () {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-    const tableYPosition = 30;
-    doc.autoTable({ html: "#hutangTable", startY: tableYPosition });
-    doc.save(`${pdfName}-data-hutang.pdf`);
-  });
+  // Tambahkan nama pengguna
+  doc.text("Data Hutang", 14, 16);
+  doc.text(`Nama: ${pdfName}`, 14, 24); // Tambahkan nama di bawah judul
+
+  const tableYPosition = 30;
+  doc.autoTable({ html: "#hutangTable", startY: tableYPosition });
+
+  doc.save(`${pdfName}-data-hutang.pdf`);
 });
+
