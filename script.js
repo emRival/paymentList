@@ -141,7 +141,7 @@ downloadPDFButton.addEventListener("click", function () {
   const doc = new jsPDF();
 
   // Tambahkan nama pengguna
-  doc.text("Data Hutang", 14, 16);
+  doc.text(`Data Hutang ${pdfName}`, 14, 16);
   doc.text(`Nama: ${pdfName}`, 14, 24); // Tambahkan nama di bawah judul
 
   const tableYPosition = 30;
