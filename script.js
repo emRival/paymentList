@@ -150,3 +150,5 @@ downloadPDFButton.addEventListener("click", function () {
   doc.save(`${pdfName}-data-hutang.pdf`);
 });
 
+  });
+
