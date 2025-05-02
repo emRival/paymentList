@@ -125,13 +125,23 @@
     }
 
     .terminal-controls span {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      margin-left: 8px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-    }
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-left: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+}
+
+/* Responsive: tombol jadi lebih kecil di layar sempit */
+@media (max-width: 640px) {
+  .terminal-controls span {
+    width: 10px;
+    height: 10px;
+    margin-left: 6px;
+  }
+}
 
     .close { background-color: #ff2d75; }
     .minimize { background-color: #ffcc00; }
@@ -196,14 +206,23 @@
     }
 
     .debt-row {
-      display: grid;
-      grid-template-columns: 50px 120px repeat(4, 1fr);
-      gap: 10px;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(30, 30, 46, 0.8);
-      position: relative;
-      z-index: 1;
-    }
+  display: grid;
+  grid-template-columns: minmax(50px, 1fr) minmax(100px, 1.5fr) repeat(4, minmax(100px, 1.5fr));
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(30, 30, 46, 0.8);
+  position: relative;
+  z-index: 1;
+}
+
+
+    .debt-row > div {
+  min-width: 120px; /* Lebih lega */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
     .debt-header {
       font-weight: bold;
@@ -434,11 +453,12 @@
 
     <div class="terminal-header">
       <div class="terminal-title">PAYMENT SYSTEM TERMINAL</div>
-      <div class="terminal-controls">
-        <span class="close"></span>
-        <span class="minimize"></span>
-        <span class="maximize"></span>
+      <div class="terminal-controls flex gap-2 sm:gap-3">
+        <span class="close w-[14px] h-[14px] sm:w-[14px] sm:h-[14px] w-[10px] h-[10px] rounded-full"></span>
+        <span class="minimize w-[14px] h-[14px] sm:w-[14px] sm:h-[14px] w-[10px] h-[10px] rounded-full"></span>
+        <span class="maximize w-[14px] h-[14px] sm:w-[14px] sm:h-[14px] w-[10px] h-[10px] rounded-full"></span>
       </div>
+
     </div>
 
     <div class="output">
@@ -521,11 +541,12 @@
 
     <div class="terminal-header">
       <div class="terminal-title">DEBT MANAGEMENT SYSTEM</div>
-      <div class="terminal-controls">
-        <span class="close"></span>
-        <span class="minimize"></span>
-        <span class="maximize"></span>
+      <div class="terminal-controls flex gap-2 sm:gap-3">
+        <span class="close w-[14px] h-[14px] sm:w-[14px] sm:h-[14px] w-[10px] h-[10px] rounded-full"></span>
+        <span class="minimize w-[14px] h-[14px] sm:w-[14px] sm:h-[14px] w-[10px] h-[10px] rounded-full"></span>
+        <span class="maximize w-[14px] h-[14px] sm:w-[14px] sm:h-[14px] w-[10px] h-[10px] rounded-full"></span>
       </div>
+
     </div>
 
     <div class="output">
@@ -558,13 +579,22 @@
           <span class="info">Please enter your access token:</span>
         </div>
 
-        <div class="command-line">
-          <span class="prompt">></span>
-          <input type="text" id="manualToken" placeholder="Enter token..." class="input-field">
-          <button onclick="submitToken()" class="btn btn-submit">
-            <i class="fas fa-key"></i> AUTHENTICATE
-          </button>
-        </div>
+        <div class="command-line flex flex-col sm:flex-row gap-2 sm:items-center">
+            <span class="prompt hidden sm:inline-block">></span>
+            <input
+              type="text"
+              id="manualToken"
+              placeholder="Enter token..."
+              class="input-field w-full sm:w-auto flex-1"
+            />
+            <button
+              onclick="submitToken()"
+              class="btn btn-submit w-full sm:w-auto px-4 py-2 text-sm sm:px-6 sm:py-3 sm:text-base"
+            >
+              <i class="fas fa-key mr-1"></i> AUTHENTICATE
+            </button>
+          </div>
+
       </div>
     </div>
 
@@ -677,27 +707,29 @@
                 pdfName = name;
 
                 let html = `
-                <div class="command-line">
-                    <span class="prompt">></span>
-                    <span class="success">User: <span class="highlight">${name}</span></span>
-                </div>
+<div class="command-line">
+  <span class="prompt">></span>
+  <span class="success">User: <span class="highlight">${name}</span></span>
+</div>
 
-                <div class="command-line">
-                    <span class="prompt">></span>
-                    <span class="warning">Total Debt: <span class="glow">${totalDebt}</span></span>
-                </div>
+<div class="command-line">
+  <span class="prompt">></span>
+  <span class="warning">Total Debt: <span class="glow">${totalDebt}</span></span>
+</div>
 
-                <div class="output">
-                    <div class="debt-row debt-header">
-                    <div>No</div>
-                    <div>Date</div>
-                    <div>Initial</div>
-                    <div>Payment</div>
-                    <div>Additional</div>
-                    <div>Remaining</div>
-                    </div>
+<!-- ✅ Tambahkan wrapper scrollable di sini -->
+<div class="overflow-x-auto w-full">
+  <div class="output min-w-[800px]">
+    <div class="debt-row debt-header">
+      <div>No</div>
+      <div>Date</div>
+      <div>Initial</div>
+      <div>Payment</div>
+      <div>Additional</div>
+      <div>Remaining</div>
+    </div>
+`;
 
-                `;
 
                 data.history.forEach((item) => {
                 html += `
@@ -724,6 +756,7 @@
                 document.getElementById("dataDisplay").innerHTML = html;
                 document.getElementById("dataDisplay").style.display = "block";
                 document.getElementById("tokenFormContainer").style.display = "none";
+                tokenFormContainer.style.display = "none";
 
                 const downloadBtn = document.getElementById("downloadPDF");
                 if (downloadBtn) downloadBtn.style.display = "block";
@@ -793,28 +826,33 @@
         }).then(() => {
           const { jsPDF } = window.jspdf;
           const doc = new jsPDF();
+
+          // Background
           doc.setFillColor(10, 10, 18);
           doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
 
-          doc.setTextColor(0, 255, 65); // terminal green
+          // Header Title
           doc.setFont('courier', 'bold');
-          doc.setFontSize(16);
-          doc.text(`RVLPYMT Debt Report for ${pdfName}`, 14, 20);
+          doc.setTextColor(0, 255, 65);
+          doc.setFontSize(14);
+          doc.text(">> PALPAY TERMINAL EXPORT", 14, 15);
 
+          // ASCII or prompt line style
           doc.setFontSize(10);
+          doc.setTextColor(0, 240, 255);
+          doc.text(`> User: ${pdfName}`, 14, 23);
+          doc.text(`> Generated: ${new Date().toLocaleString()}`, 14, 29);
           doc.setTextColor(255, 255, 255);
-          doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 28);
+          doc.text(`> Displaying recent debt transactions...`, 14, 35);
 
-          // Ambil data dari .debt-row
-          const rows = Array.from(document.querySelectorAll('.debt-row')).slice(1); // skip header
-          const tableData = rows.map(row => {
-            return Array.from(row.children).map(cell => cell.textContent.trim());
-          });
-
+          // Table Headers
           const headers = ["No", "Date", "Initial", "Payment", "Additional", "Remaining"];
+          const rows = Array.from(document.querySelectorAll('.debt-row')).slice(1); // skip header
+          const tableData = rows.map(row => Array.from(row.children).map(cell => cell.textContent.trim()));
 
+          // Terminal-style table
           doc.autoTable({
-            startY: 35,
+            startY: 40,
             head: [headers],
             body: tableData,
             theme: 'grid',
@@ -822,10 +860,9 @@
               font: 'courier',
               fontSize: 9,
               cellPadding: 3,
-              fillColor: [10, 10, 18],
-              textColor: [255, 255, 255],
-              lineColor: [30, 30, 46],
-              halign: 'left'
+              fillColor: [15, 15, 25],
+              textColor: [0, 255, 65],
+              lineColor: [50, 50, 70]
             },
             headStyles: {
               fillColor: [0, 240, 255],
@@ -833,16 +870,16 @@
               fontStyle: 'bold'
             },
             alternateRowStyles: {
-              fillColor: [20, 20, 30]
+              fillColor: [10, 10, 18]
             }
           });
 
+          // Save
           doc.save(`${pdfName}-debt-report.pdf`);
         });
       }
     });
-    </script>
-
+  </script>
 
 <style>
    .text-palpay-green {
