@@ -413,7 +413,8 @@
   <!-- ASCII Art Header -->
   <div class="ascii-art text-xs">
     <div class="text-center ascii-art text-sm leading-none mb-4">
-        <div id="ascii-container" class="text-center ascii-art text-sm leading-none mb-4 font-mono text-palpay-green whitespace-pre"></div>
+        <div id="ascii-container" class="text-palpay-green font-mono whitespace-pre-wrap break-words overflow-x-auto leading-tight glitch text-[clamp(8px,2vw,14px)] text-center mb-4"></div>
+
 
 
         <div class="text-cyber-blue glow tracking-widest mt-2 font-semibold">
@@ -844,34 +845,37 @@
 
 
 <style>
-    .text-palpay-green {
-      color: #00ff41;
-      text-shadow:
-        0 0 5px #00ff41,
-        0 0 10px #00ff41,
-        0 0 15px #00ff41;
-      animation: glitch 1s infinite;
-    }
+   .text-palpay-green {
+  color: #00ff41;
+  text-shadow:
+    0 0 3px #00ff41,
+    0 0 6px #00ff41,
+    0 0 9px #00ff41;
+}
 
-    @keyframes glitch {
-      0% { transform: none; }
-      20% { transform: skewX(2deg); }
-      40% { transform: skewX(-2deg); }
-      60% { transform: translateX(1px); }
-      80% { transform: translateX(-1px); }
-      100% { transform: none; }
-    }
+.glitch {
+  animation: glitch 1.6s infinite ease-in-out;
+}
+
+@keyframes glitch {
+  0% { text-shadow: 1px 0 #00ff41, -1px 0 #00ff41; }
+  20% { text-shadow: -2px 0 #00ff41, 2px 0 #00ff41; }
+  40% { text-shadow: 3px 0 #00ff41, -3px 0 #00ff41; }
+  60% { text-shadow: -1px 0 #00ff41, 1px 0 #00ff41; }
+  80% { text-shadow: 2px 0 #00ff41, -2px 0 #00ff41; }
+  100% { text-shadow: 0 0 #00ff41; }
+}
+
   </style>
 
-  <script>
+<script>
     const asciiArtLines = [
-
-    "   ██████╗  █████╗ ██╗     ██████╗  █████╗ ██╗   ██╗",
-    "   ██╔══██╗██╔══██╗██║     ██╔══██╗██╔══██╗╚██╗ ██╔╝",
-    "  ██████╔╝███████║██║     ██████╔╝███████║ ╚████╔╝",
-    " ██╔═══╝ ██╔══██║██║     ██╔═══╝ ██╔══██║  ╚██╔╝",
-    "██║     ██║  ██║███████╗██║     ██║  ██║   ██║",
-    "╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝  ╚═╝   ╚═╝",
+      "   ██████╗  █████╗ ██╗     ██████╗  █████╗ ██╗   ██╗",
+      "   ██╔══██╗██╔══██╗██║     ██╔══██╗██╔══██╗╚██╗ ██╔╝",
+      "  ██████╔╝███████║██║     ██████╔╝███████║ ╚████╔╝",
+      " ██╔═══╝ ██╔══██║██║     ██╔═══╝ ██╔══██║  ╚██╔╝",
+      "██║     ██║  ██║███████╗██║     ██║  ██║   ██║",
+      "╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝  ╚═╝   ╚═╝",
       "                                              "
     ];
 
@@ -885,17 +889,18 @@
         if (currentChar < line.length) {
           container.innerHTML += line.charAt(currentChar);
           currentChar++;
-          setTimeout(typeAscii, 8);
+          setTimeout(typeAscii, 6);
         } else {
           container.innerHTML += "\n";
           currentLine++;
           currentChar = 0;
-          setTimeout(typeAscii, 80);
+          setTimeout(typeAscii, 60);
         }
       }
     }
 
     typeAscii();
   </script>
+
 </body>
 </html>
