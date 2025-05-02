@@ -1,68 +1,901 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>Link Payment & Data Hutang</title>
-  <link rel="shortcut icon" type="image/x-icon" href="img/a.png" />
-  <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,700" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RVLPYMT - Rival Payment Terminal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            matrix: {
+              50: '#f0fff4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            },
+            cyber: {
+              pink: '#ff2d75',
+              blue: '#00f0ff',
+              purple: '#8a2be2',
+              yellow: '#ffcc00',
+            },
+            terminal: {
+              bg: '#0a0a12',
+              border: '#1e1e2e',
+              text: '#e0e0e0',
+              prompt: '#00ff41',
+              cursor: '#ffffff',
+              highlight: '#ff2d75',
+              info: '#00f0ff',
+              warning: '#ffcc00',
+              error: '#ff2d75',
+            }
+          },
+          fontFamily: {
+            'fira': ['Fira Code', 'monospace'],
+            'orbitron': ['Orbitron', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'text-glow': 'text-glow 1.5s ease-in-out infinite alternate',
+            'scanline': 'scanline 8s linear infinite',
+          },
+          keyframes: {
+            'text-glow': {
+              '0%, 100%': { 'text-shadow': '0 0 5px currentColor' },
+              '50%': { 'text-shadow': '0 0 15px currentColor' },
+            },
+            'scanline': {
+              '0%': { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(100vh)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap');
+
+    body {
+      font-family: 'Fira Code', monospace;
+      background-color: #0a0a12;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    .terminal {
+      background-color: rgba(10, 10, 18, 0.9);
+      border: 1px solid #1e1e2e;
+      border-radius: 0;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .terminal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        rgba(0, 240, 255, 0.07) 1px,
+        transparent 1px
+      );
+      background-size: 100% 2px;
+      pointer-events: none;
+      animation: scanline 8s linear infinite;
+      z-index: 0;
+    }
+
+    .terminal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #1e1e2e;
+      position: relative;
+      z-index: 1;
+    }
+
+    .terminal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #00f0ff;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
+      animation: text-glow 2s ease-in-out infinite alternate;
+    }
+
+    .terminal-controls span {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      margin-left: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .close { background-color: #ff2d75; }
+    .minimize { background-color: #ffcc00; }
+    .maximize { background-color: #00f0ff; }
+
+    .command-line {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .prompt {
+      color: #00ff41;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 20px;
+      background-color: #ffffff;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .output {
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .success { color: #00ff41; }
+    .error { color: #ff2d75; }
+    .warning { color: #ffcc00; }
+    .info { color: #00f0ff; }
+    .highlight { color: #ff2d75; }
+    .link { color: #8a2be2; }
+
+    .payment-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 12px;
+      background-color: rgba(30, 30, 46, 0.5);
+      border-left: 3px solid #00f0ff;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .payment-item:hover {
+      background-color: rgba(30, 30, 46, 0.8);
+      border-left-color: #ff2d75;
+      transform: translateX(5px);
+    }
+
+    .debt-row {
+      display: grid;
+      grid-template-columns: 50px 120px repeat(4, 1fr);
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(30, 30, 46, 0.8);
+      position: relative;
+      z-index: 1;
+    }
+
+    .debt-header {
+      font-weight: bold;
+      color: #ffcc00;
+      border-bottom: 1px solid #1e1e2e;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 0;
+      font-family: 'Fira Code', monospace;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+      letter-spacing: 1px;
+    }
+
+    .btn-copy {
+      background-color: #00f0ff;
+      color: #0a0a12;
+    }
+
+    .btn-copy:hover {
+      background-color: #00ff41;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    .btn-scan {
+      background-color: #8a2be2;
+      color: #ffffff;
+    }
+
+    .btn-scan:hover {
+      background-color: #ff2d75;
+      box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+    }
+
+    .btn-submit {
+      background-color: #00ff41;
+      color: #0a0a12;
+    }
+
+    .btn-submit:hover {
+      background-color: #00f0ff;
+      box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+    }
+
+    .btn-download {
+      background-color: #ffcc00;
+      color: #0a0a12;
+    }
+
+    .btn-download:hover {
+      background-color: #ff2d75;
+      box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+    }
+
+    .input-field {
+      background-color: rgba(10, 10, 18, 0.8);
+      border: 1px solid #1e1e2e;
+      color: #e0e0e0;
+      padding: 10px;
+      font-family: 'Fira Code', monospace;
+      flex-grow: 1;
+      margin-right: 10px;
+      letter-spacing: 1px;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #00f0ff;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    }
+
+    .loader {
+      border: 3px solid #1e1e2e;
+      border-top: 3px solid #00f0ff;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .ascii-art {
+      color: #00ff41;
+      line-height: 1;
+      margin-bottom: 20px;
+      font-family: 'Fira Code', monospace;
+      text-shadow: 0 0 10px rgba(0, 255, 65, 0.7);
+      position: relative;
+      z-index: 1;
+    }
+
+    .glow {
+      text-shadow: 0 0 10px currentColor;
+      animation: text-glow 1.5s ease-in-out infinite alternate;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px solid #1e1e2e;
+      color: #666;
+      font-size: 0.8em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .blink {
+      animation: blink 1s infinite;
+    }
+
+    .cyber-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .cyber-line {
+      position: absolute;
+      height: 1px;
+      width: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.5), transparent);
+      animation: cyber-line 15s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes cyber-line {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .cyber-pulse {
+      animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    .corner-decoration {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-color: #00f0ff;
+      border-style: solid;
+      border-width: 0;
+      z-index: 1;
+    }
+
+    .corner-tl {
+      top: 0;
+      left: 0;
+      border-top-width: 2px;
+      border-left-width: 2px;
+    }
+
+    .corner-tr {
+      top: 0;
+      right: 0;
+      border-top-width: 2px;
+      border-right-width: 2px;
+    }
+
+    .corner-bl {
+      bottom: 0;
+      left: 0;
+      border-bottom-width: 2px;
+      border-left-width: 2px;
+    }
+
+    .corner-br {
+      bottom: 0;
+      right: 0;
+      border-bottom-width: 2px;
+      border-right-width: 2px;
+    }
+  </style>
 </head>
-<body>
-  
-  <!-- Falling money container -->
-  <div id="falling-money-container"></div>
-  <div class="container">
-    <h1>Link Payment & Data Hutang</h1>
-    <div class="box">
-      <h2>Payment List</h2>
-      <div class="payment">
-        <p><b>ShopeePay/Dana</b> (Muhammad Rival)</p>
-        <p id="p1"><b>08998419000</b></p>
-        <button class="copy" onclick="copyToClipboard('#p1')">COPY</button>
+<body class="p-4 max-w-6xl mx-auto">
+  <!-- Cyber Grid Background -->
+  <div class="cyber-grid"></div>
+  <div class="cyber-line" style="top: 30%;"></div>
+  <div class="cyber-line" style="top: 70%;"></div>
 
-        <p><b>BSI</b> (Muhammad Rival)</p>
-        <p id="p2"><b>7185946988</b></p>
-        <button class="copy" onclick="copyToClipboard('#p2')">COPY</button>
+  <!-- ASCII Art Header -->
+  <div class="ascii-art text-xs">
+    <div class="text-center ascii-art text-sm leading-none mb-4">
+        <div id="ascii-container" class="text-center ascii-art text-sm leading-none mb-4 font-mono text-palpay-green whitespace-pre"></div>
 
-        <p><b>Jago Syariah</b> (Muhammad Rival)</p>
-        <p id="p3"><b>508144752658</b></p>
-        <button class="copy" onclick="copyToClipboard('#p3')">COPY</button>
 
-        <p><b>QRIS</b> (Rival Dev)</p>
-        <a href="assets/qris.jpeg" download="qris.jpeg">
-          <button class="copy qris-button">SCAN QRIS</button>
-        </a>
+        <div class="text-cyber-blue glow tracking-widest mt-2 font-semibold">
+          RVLPYMT v3.1.4 – Rival Payment Terminal
+        </div>
       </div>
-    
+
+  </div>
+
+  <!-- Main Terminal -->
+  <div class="terminal mb-6 relative">
+    <!-- Corner Decorations -->
+    <div class="corner-decoration corner-tl"></div>
+    <div class="corner-decoration corner-tr"></div>
+    <div class="corner-decoration corner-bl"></div>
+    <div class="corner-decoration corner-br"></div>
+
+    <div class="terminal-header">
+      <div class="terminal-title">PAYMENT SYSTEM TERMINAL</div>
+      <div class="terminal-controls">
+        <span class="close"></span>
+        <span class="minimize"></span>
+        <span class="maximize"></span>
+      </div>
     </div>
-    <br>
-    <br>
-    <div class="box">
-      <h2>Data Hutang</h2>
-      <div id="loaderContainer">
-        <div class="loader" id="loader"></div>
-        <div class="loading-text">Memuat data, harap tunggu...</div>
+
+    <div class="output">
+      <div class="command-line">
+        <span class="prompt">></span>
+        <span class="info">Initializing RVLPYMT system...</span>
       </div>
 
-      <div id="dataDisplay" class="fade-in"></div>
-
-      <div id="tokenFormContainer" class="token-form" style="display: none;">
-        <p>Masukkan token untuk melihat data hutang Anda:</p>
-        <input type="text" id="manualToken" placeholder="Masukkan token..." />
-        <button onclick="submitToken()">Submit</button>
+      <div class="command-line">
+        <span class="prompt">></span>
+        <span class="success">System ready. Type 'help' for commands</span>
       </div>
 
-      <button id="downloadPDF" style="display: none;">Download PDF</button>
+      <div class="command-line">
+        <span class="prompt">></span>
+        <span class="info">display_payment_methods --secure</span>
+      </div>
+
+      <div class="output">
+        <div class="success">Available Payment Methods:</div>
+
+        <!-- ShopeePay/Dana -->
+        <div class="payment-item">
+          <div>
+            <span class="highlight">ShopeePay/Dana</span> (<span class="info">Muhammad Rival</span>)
+            <div class="info">08998419000</div>
+          </div>
+          <button onclick="copyToClipboard('#p1')" class="btn btn-copy">
+            <i class="fas fa-copy"></i> COPY
+          </button>
+          <span id="p1" style="display:none">08998419000</span>
+        </div>
+
+        <!-- BSI -->
+        <div class="payment-item">
+          <div>
+            <span class="highlight">BSI</span> (<span class="info">Muhammad Rival</span>)
+            <div class="info">7185946988</div>
+          </div>
+          <button onclick="copyToClipboard('#p2')" class="btn btn-copy">
+            <i class="fas fa-copy"></i> COPY
+          </button>
+          <span id="p2" style="display:none">7185946988</span>
+        </div>
+
+        <!-- Jago Syariah -->
+        <div class="payment-item">
+          <div>
+            <span class="highlight">Jago Syariah</span> (<span class="info">Muhammad Rival</span>)
+            <div class="info">508144752658</div>
+          </div>
+          <button onclick="copyToClipboard('#p3')" class="btn btn-copy">
+            <i class="fas fa-copy"></i> COPY
+          </button>
+          <span id="p3" style="display:none">508144752658</span>
+        </div>
+
+        <!-- QRIS -->
+        <div class="payment-item">
+          <div>
+            <span class="highlight">QRIS</span> (<span class="info">Rival Dev</span>)
+          </div>
+          <a href="assets/qris.jpeg" download="qris.jpeg">
+            <button class="btn btn-scan">
+              <i class="fas fa-qrcode"></i> SCAN
+            </button>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-  <script src="script.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Debt Terminal -->
+  <div class="terminal relative">
+    <!-- Corner Decorations -->
+    <div class="corner-decoration corner-tl"></div>
+    <div class="corner-decoration corner-tr"></div>
+    <div class="corner-decoration corner-bl"></div>
+    <div class="corner-decoration corner-br"></div>
+
+    <div class="terminal-header">
+      <div class="terminal-title">DEBT MANAGEMENT SYSTEM</div>
+      <div class="terminal-controls">
+        <span class="close"></span>
+        <span class="minimize"></span>
+        <span class="maximize"></span>
+      </div>
+    </div>
+
+    <div class="output">
+      <div class="command-line">
+        <span class="prompt">></span>
+        <span class="info">check_debt_status --token=[YOUR_TOKEN]</span>
+      </div>
+
+      <!-- Loader -->
+      <div id="loaderContainer" class="output">
+        <div class="command-line">
+          <span class="prompt">></span>
+          <span><span class="loader"></span> <span class="info">Connecting to encrypted debt database...</span></span>
+        </div>
+      </div>
+
+      <!-- Data Display -->
+      <div id="dataDisplay" class="fade-in" style="display:none;"></div>
+
+
+      <!-- Token Form -->
+      <div id="tokenFormContainer" class="output">
+        <div class="command-line">
+          <span class="prompt">></span>
+          <span class="error">Error: No token provided</span>
+        </div>
+
+        <div class="command-line">
+          <span class="prompt">></span>
+          <span class="info">Please enter your access token:</span>
+        </div>
+
+        <div class="command-line">
+          <span class="prompt">></span>
+          <input type="text" id="manualToken" placeholder="Enter token..." class="input-field">
+          <button onclick="submitToken()" class="btn btn-submit">
+            <i class="fas fa-key"></i> AUTHENTICATE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div>STATUS: <span class="success">OPERATIONAL</span></div>
+    <div>LAST UPDATE: <span class="info" id="lastUpdate"></span></div>
+    <script>
+      function updateLastUpdateTime() {
+        const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        const formatter = new Intl.DateTimeFormat('en-US', options);
+        document.getElementById('lastUpdate').textContent = formatter.format(new Date());
+      }
+      setInterval(updateLastUpdateTime, 1000);
+      updateLastUpdateTime();
+    </script>
+      <div>CONNECTION: <span class="success glow">SECURE</span> <span class="blink">_</span></div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // Terminal typing effect
+    function typeWriter(element, text, speed, callback) {
+      let i = 0;
+      element.innerHTML = '';
+      function typing() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(typing, speed);
+        } else if (callback) {
+          callback();
+        }
+      }
+      typing();
+    }
+
+    // Copy to clipboard function
+    function copyToClipboard(element) {
+      var $temp = $("<input>");
+      $("body").append($temp);
+      $temp.val($(element).text()).select();
+      document.execCommand("copy");
+      $temp.remove();
+
+      Swal.fire({
+        title: '<span class="success">COPIED!</span>',
+        html: '<span class="info">Payment information copied to clipboard</span>',
+        timer: 1500,
+        showConfirmButton: false,
+        background: 'var(--terminal-bg)',
+        customClass: {
+          popup: 'terminal',
+          title: 'terminal-title'
+        }
+      });
+    }
+    let pdfName = "debt-data";
+    // Initialize when DOM is loaded
+    document.addEventListener("DOMContentLoaded", function () {
+      // Simulate loading animation
+      setTimeout(() => {
+        document.getElementById('loaderContainer').style.display = 'none';
+        document.getElementById('tokenFormContainer').style.display = 'block';
+      }, 2000);
+
+      const dataDisplay = document.getElementById("dataDisplay");
+      const loader = document.getElementById("loaderContainer");
+      const tokenFormContainer = document.getElementById("tokenFormContainer");
+      const downloadPDFButton = document.getElementById("downloadPDF");
+
+
+      function showLoader() {
+        loader.style.display = "block";
+        dataDisplay.style.display = "none";
+      }
+
+      function hideLoader() {
+        loader.style.display = "none";
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      let token = urlParams.get("token");
+
+      if (!token) {
+        tokenFormContainer.style.display = "block";
+        dataDisplay.style.display = "none";
+      } else {
+        loadData(token);
+      }
+
+      function loadData(token) {
+        showLoader();
+
+        fetch(`https://simple-express-server-ten.vercel.app/api/token=${token}`)
+            .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+            return response.json();
+            })
+            .then((data) => {
+            hideLoader();
+
+            if (data.status === "success" && Array.isArray(data.history)) {
+                const name = data.history[0]?.name || "N/A";
+                const totalDebt = data.total_debt || "N/A";
+                pdfName = name;
+
+                let html = `
+                <div class="command-line">
+                    <span class="prompt">></span>
+                    <span class="success">User: <span class="highlight">${name}</span></span>
+                </div>
+
+                <div class="command-line">
+                    <span class="prompt">></span>
+                    <span class="warning">Total Debt: <span class="glow">${totalDebt}</span></span>
+                </div>
+
+                <div class="output">
+                    <div class="debt-row debt-header">
+                    <div>No</div>
+                    <div>Date</div>
+                    <div>Initial</div>
+                    <div>Payment</div>
+                    <div>Additional</div>
+                    <div>Remaining</div>
+                    </div>
+
+                `;
+
+                data.history.forEach((item) => {
+                html += `
+                    <div class="debt-row">
+                    <div>${item.index}</div>
+                    <div>${item.transactionDate}</div>
+                    <div>${item.initialDebt}</div>
+                    <div>${item.payment}</div>
+                    <div>${item.additionalDebt || "Rp.0"}</div>
+                    <div>${item.remainingDebt}</div>
+                    </div>
+                `;
+                });
+
+                html += `<div class="command-line">
+                <span class="prompt">></span>
+                <button id="downloadPDF" class="btn btn-download">
+                    <i class="fas fa-file-export"></i> EXPORT_TO_PDF
+                </button>
+                </div>`;
+
+                html += `</div> <!-- .output end -->`;
+
+                document.getElementById("dataDisplay").innerHTML = html;
+                document.getElementById("dataDisplay").style.display = "block";
+                document.getElementById("tokenFormContainer").style.display = "none";
+
+                const downloadBtn = document.getElementById("downloadPDF");
+                if (downloadBtn) downloadBtn.style.display = "block";
+            } else {
+                const errorDisplay = document.createElement('div');
+            errorDisplay.className = 'command-line';
+            errorDisplay.innerHTML = `
+              <span class="prompt">></span>
+              <span class="error">ERROR: Unable to retrieve debt data</span>
+            `;
+            dataDisplay.appendChild(errorDisplay);
+            }
+            }, 1500);
+
+      }
+
+      window.submitToken = function () {
+        const manualToken = document.getElementById("manualToken").value;
+        if (manualToken) {
+          loadData(manualToken);
+        } else {
+          Swal.fire({
+            title: '<span class="error">AUTH ERROR</span>',
+            html: '<span class="warning">Please enter a valid token</span>',
+            background: 'var(--terminal-bg)',
+            customClass: {
+              popup: 'terminal',
+              title: 'terminal-title'
+            }
+          });
+        }
+      };
+
+
+
+      // Add cyberpunk-style random glitches
+      setInterval(() => {
+    if (Math.random() > 0.9) {
+      const terminals = document.querySelectorAll('.terminal');
+      terminals.forEach(terminal => {
+        terminal.style.boxShadow = `0 0 ${Math.random() * 30}px rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`;
+        setTimeout(() => {
+          terminal.style.boxShadow = '0 0 30px rgba(0, 240, 255, 0.1)';
+        }, 100);
+      });
+    }
+  }, 3000);
+    });
+  </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    document.addEventListener("click", function (e) {
+      if (e.target && e.target.id === "downloadPDF") {
+        Swal.fire({
+          title: '<span class="success">EXPORT INITIATED</span>',
+          html: '<span class="info">Generating PDF report...</span>',
+          timer: 1500,
+          showConfirmButton: false,
+          background: 'var(--terminal-bg)',
+          customClass: {
+            popup: 'terminal',
+            title: 'terminal-title'
+          }
+        }).then(() => {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          doc.setFillColor(10, 10, 18);
+          doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
+
+          doc.setTextColor(0, 255, 65); // terminal green
+          doc.setFont('courier', 'bold');
+          doc.setFontSize(16);
+          doc.text(`RVLPYMT Debt Report for ${pdfName}`, 14, 20);
+
+          doc.setFontSize(10);
+          doc.setTextColor(255, 255, 255);
+          doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 28);
+
+          // Ambil data dari .debt-row
+          const rows = Array.from(document.querySelectorAll('.debt-row')).slice(1); // skip header
+          const tableData = rows.map(row => {
+            return Array.from(row.children).map(cell => cell.textContent.trim());
+          });
+
+          const headers = ["No", "Date", "Initial", "Payment", "Additional", "Remaining"];
+
+          doc.autoTable({
+            startY: 35,
+            head: [headers],
+            body: tableData,
+            theme: 'grid',
+            styles: {
+              font: 'courier',
+              fontSize: 9,
+              cellPadding: 3,
+              fillColor: [10, 10, 18],
+              textColor: [255, 255, 255],
+              lineColor: [30, 30, 46],
+              halign: 'left'
+            },
+            headStyles: {
+              fillColor: [0, 240, 255],
+              textColor: [0, 0, 0],
+              fontStyle: 'bold'
+            },
+            alternateRowStyles: {
+              fillColor: [20, 20, 30]
+            }
+          });
+
+          doc.save(`${pdfName}-debt-report.pdf`);
+        });
+      }
+    });
+    </script>
+
+
+<style>
+    .text-palpay-green {
+      color: #00ff41;
+      text-shadow:
+        0 0 5px #00ff41,
+        0 0 10px #00ff41,
+        0 0 15px #00ff41;
+      animation: glitch 1s infinite;
+    }
+
+    @keyframes glitch {
+      0% { transform: none; }
+      20% { transform: skewX(2deg); }
+      40% { transform: skewX(-2deg); }
+      60% { transform: translateX(1px); }
+      80% { transform: translateX(-1px); }
+      100% { transform: none; }
+    }
+  </style>
+
+  <script>
+    const asciiArtLines = [
+
+    "   ██████╗  █████╗ ██╗     ██████╗  █████╗ ██╗   ██╗",
+    "   ██╔══██╗██╔══██╗██║     ██╔══██╗██╔══██╗╚██╗ ██╔╝",
+    "  ██████╔╝███████║██║     ██████╔╝███████║ ╚████╔╝",
+    " ██╔═══╝ ██╔══██║██║     ██╔═══╝ ██╔══██║  ╚██╔╝",
+    "██║     ██║  ██║███████╗██║     ██║  ██║   ██║",
+    "╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝  ╚═╝   ╚═╝",
+      "                                              "
+    ];
+
+    const container = document.getElementById("ascii-container");
+    let currentLine = 0;
+    let currentChar = 0;
+
+    function typeAscii() {
+      if (currentLine < asciiArtLines.length) {
+        const line = asciiArtLines[currentLine];
+        if (currentChar < line.length) {
+          container.innerHTML += line.charAt(currentChar);
+          currentChar++;
+          setTimeout(typeAscii, 8);
+        } else {
+          container.innerHTML += "\n";
+          currentLine++;
+          currentChar = 0;
+          setTimeout(typeAscii, 80);
+        }
+      }
+    }
+
+    typeAscii();
+  </script>
 </body>
 </html>
